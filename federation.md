@@ -17,11 +17,9 @@ This document defines standard practices to federate communities using ActivityP
 ## Terminology
 Terminology in this document is not expressly used to propose new types, and can be represented as `Actor` or `Service` types.  However for clarity we will define the following:
 
-- `Topic` is the primary building block of Yuforium's federation model, and represents the subject matter of connection, such as as a favorite hobby or interest.
+- `Community` is the primary building block of Yuforium's federation model, and represents the origination of an `Object` type through any outbox associated with federation.  Like the `context` field of an `Object`, the definition of `Community` is intentionally vague, and represents a subject matter of connection, such as as a favorite hobby or interest, or a group of friends.  Regardless of _how_ the community is defined, the **origination** represents the motivation for a person to contribute to the community.
 
-- `Community` represents an aggregatation of people, relationships, and content.  Usually this may be centered on various topics,   It can be an explicit representation or a broader network of connected communities.
-
-- `Forum` represents a service endpoint that federates community activity and manages a set of users that can post content to the forum outbox and broadcast messages to a larger, federated community.  This type of resource may also include moderators who manage the content that appears on the instance.
+- `Forum` represents a service endpoint that federates community activity and manages a set of users that can post content to the forum outbox and broadcast messages to the larger, federated `Community`.  This type of resource may also include moderators who manage the content that appears on the instance.
 
 ## Grouping Content with the Context Field
 Yuforium uses the `context` field for federation, which is described in the Activity Streams `Object` specification as follows:
@@ -35,45 +33,22 @@ The `context` field is well suited for federating community content, because gro
   "@context": "https://www.w3.org/ns/activitystreams",
   "id": "https://textiverse.com/object/123456",
   "type": "Note",
-  "content": "Context groups objects and activities",
-  "context": [
-    {
-      "type": "Actor",
-      "id": "https://yuforium.com/topic/activitypub"
-    }
-  ]
+  "content": "The context field groups objects that have a common originating purpose together, change my mind.",
+  "context": "https://yuforium.com/community/activitypub-developers"
 }
 ```
 
-In the example above, we use `Actor` here to define a topic, but it could just as easily be an additional type, such as a `Topic`:
-
-```json
-{
-  "@context": "https://yuforium.com/ns/activitypub",
-  "id": "https://textiverse.com/topic/dodgeball",
-  "type": "Topic",
-  "name": "Dodgeball",
-  "summary": "Anything related to the sport of Dodgeball"
-}
-```
-
-Multiple contexts can be used, enabling cross network federation.  The following `Note` will span across community networks that discuss dodgeball and wrenches:
+Multiple contexts can be used, enabling cross network federation.  The following `Note` can span across multiple communities.  In this example, the Note is relevant to both the `ActivityPub Developers` community on Yuforium and the `Typescript Developers` community on Textiverse:
 
 ```json
 {
   "@context": "https://www.w3.org/ns/activitystreams",
   "id": "https://textiverse.com/object/5678",
   "type": "Note",
-  "content": "If you can dodge a wrench, you can dodge a ball",
+  "content": "Hi, I am implementing an ActivityPub server in Typescript",
   "context": [
-    {
-      "type": "Topic",
-      "id": "https://yuforium.com/topic/dodgeball"
-    },
-    {
-      "type": "Topic",
-      "id": "https://yuforium.com/topic/wrenches"
-    }
+    "https://yuforium.com/community/activitypub-developers",
+    "https://textiverse.com/community/typescript-developers"
   ]
 }
 ```
